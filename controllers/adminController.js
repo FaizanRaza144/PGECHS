@@ -301,7 +301,21 @@ const adminController = {
         //send response
 
         res.status(200).json({user:null, auth:false})
-    }
+    },
+    async getAllUser(req,res,next){
+        let users = {};
+        try {
+            users = await User.find({});
+            
+        } catch (error) {
+                return next(error);
+        }
+        res.status(200).json({
+            data:users,
+            msg:"ALL USERS FETCHED SUCCESSFULLY"
+        })
+    },
+
 
 }
 
