@@ -5,7 +5,8 @@ const Joi = require('joi');
 const bycrypt = require('bcryptjs');
 const RefreshToken = require('../models/token');
 const JWTService = require('../services/JWTservice');
-const memberRegMod = require('../models/memberRegister')
+const memberRegMod = require('../models/memberRegister');
+const role = require('../models/role');
 
 
 const adminController = {
@@ -316,7 +317,26 @@ const adminController = {
         })
     },
 
-
+    async getAllRoles(req,res,next){
+        let users = {};
+        try {
+            users = await role.find({})  .populate({
+                path: 'role',
+                populate: {
+                  path: 'permission.Permission_id',
+                  model:"Permissions",
+                  select:"permissionName"
+                },
+              });
+            
+        } catch (error) {
+                return next(error);
+        }
+        res.status(200).json({
+            data:users,
+            msg:"ALL USERS FETCHED SUCCESSFULLY"
+        })
+    }
 }
 
 module.exports = adminController;
