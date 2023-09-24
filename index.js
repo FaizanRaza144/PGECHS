@@ -4,6 +4,15 @@ const {PORT} = require('./config/config');
 const DBConnect = require('./Database/database');
 const route = require('./Routes/routes');
 const errorHandler = require('./middleware/errorHandler');
+const cors = require('cors');
+
+app.use(cors(
+    {
+        origin:["https://pgechs-testing.vercel.app"],
+        methods:["POST","PUT","GET","DELETE"],
+        credentials:true
+    }
+))
 
 DBConnect();
 
