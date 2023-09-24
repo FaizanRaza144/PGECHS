@@ -12,7 +12,12 @@ app.use(cors(
         methods:["POST","PUT","GET","DELETE"],
         credentials:true
     }
-))
+));
+app.use(express.json())
+
+app.get("/", (req, res) => {
+    res.json("Hello");
+})
 
 DBConnect();
 
