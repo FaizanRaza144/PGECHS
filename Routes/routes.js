@@ -6,7 +6,9 @@ const accounts = require('../controllers/accounts');
 const ledger = require('../controllers/ledger');
 const adminController = require('../controllers/adminController');
 
-
+route.get("/", (req, res) => {
+    res.json("Hello");
+})
 //Admin Routes
 route.post('/admin',adminController.login);
 route.put('/admin/passwordReset/:id',adminController.passwordReset);
