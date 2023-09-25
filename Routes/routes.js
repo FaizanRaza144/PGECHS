@@ -16,7 +16,8 @@ route.get('/admin/role/getAllRoles',adminController.getAllUsers);
 route.post('/admin/Register',adminController.Register);
 route.post('/admin/logout',adminController.logout);
 
-
+//Get all  registered members by admin
+route.get('/admin/getAllRegisterdMembers',adminController.getAllRegisterdMembers);
 
 
 //MEMBERS MANAGEMENT******************************************************

@@ -340,6 +340,17 @@ const adminController = {
             msg:"ALL USERS FETCHED SUCCESSFULLY"
         })
     },
+    async getAllRegisterdMembers(req,res,next){
+        let user;
+        try {
+            
+            user = await memberRegMod.find({});
+
+        } catch (error) {
+            return next(error);
+        }
+        res.status(200).json({data:user,msg:"All NEWLY REGISTERED MEMBERS FETCHED SUCCESSFULLY"})
+    }
 }
 
 module.exports = adminController;
