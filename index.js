@@ -11,6 +11,7 @@ app.use(express.json());
 
 
 DBConnect();
+
 app.get("/",(req,res)=>{
     res.status(200).send({msg:"Welcome to PGECHS"})
 })

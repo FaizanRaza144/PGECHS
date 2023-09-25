@@ -17,26 +17,32 @@ route.post('/admin/Register',adminController.Register);
 route.post('/admin/logout',adminController.logout);
 
 
-//MEMBERS MANAGEMENT******************************************************
 
+
+//MEMBERS MANAGEMENT******************************************************
 
 //Members login Route
 route.post('/members',memberController.login);
 
 //Members Register Route
 route.post('/members/membersRegister',memberController.register);
-
+route.post('/members/addDetails',memberController.addDetails);
 //View ALL members
 route.get('/members/all',memberController.all);
 
 //View member by id
-route.get('/members/:id',memberController.getById);
+route.get('/members/getbyid/:id',memberController.getById);
 
 //Edit member by id
-route.put('members/:id',memberController.update);
+route.put('/members/update/:id',memberController.update);
 
 //Delete member by id
-route.delete('/members/:id', memberController.delete);
+route.delete('/members/delete/:id', memberController.delete);
+
+
+
+
+
 
 //PLOTS**************************************************************
 //Add Plots

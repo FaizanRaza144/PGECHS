@@ -1,45 +1,325 @@
 const memberModel = require('../models/members');
+const memberReg = require('../models/memberRegister');
+const Role = require('../models/role');
 const Joi = require('joi');
+const JWTService = require('../services/JWTservice')
+const bycrypt = require('bcryptjs');
+const RefreshToken = require('../models/token');
 
 
 const memberController = {
+
+
     async register(req,res,next){
+        const userSchema = Joi.object({
+            email:Joi.string().email().required(),
+            password:Joi.string().required(),
+            role:Joi.string().required(),
+            memberId:Joi.string().required()
+        });
+        const{error} = userSchema.validate(req.body);
+        if(error){
+            return next(error);
+        }
+        const {email,password,role,memberId} = req.body;
+
+        const hashedPassword = await bycrypt.hash(password,10);
+        try {
+            const usernameInUse = await memberReg.exists({email});
+            if(usernameInUse){
+                const error={
+                    status:409,
+                    message:"Member already exists"
+                }
+               return res.status(error.status).json({msg:error.message});
+            }
+        } catch (error) {
+            return next(error);
+        }
+
+        let accessToken;
+        let refreshToken;
+        let user;
+        try {
+         const   userToRegister = new memberReg({
+                email:email,
+                password:hashedPassword,
+                role:role,
+                MemberId:memberId
+            });
+            user = await userToRegister.save();
+    //token Generation
+            accessToken = JWTService.SignAccessToken({_id : user._id},'30m');
+            refreshToken = JWTService.SignRefreshToken({_id:user._id},'60m');
+        } catch (error) {
+            return next(error);
+        }
+
+          //store refresh token in db
+       await JWTService.StoreRefreshToken(refreshToken,user._id);
+
+       res.cookie('accessToken',accessToken,{
+           maxAge:1000*60*60*24,
+           httpOnly:true
+       });
+
+       res.cookie('refreshToken',refreshToken,{
+           maxAge:1000*60*60*24,
+           httpOnly: true
+       });
+
+       let rol;
+        try{
+          rol = await Role.findById(role).populate({
+            path:"role",
+          });
+        
+        }catch(error){return next(error)}
+        res.status(201).json({Data:user, msg: `${rol.role} has been successfully registered`});
+    },
+
+
+    async addDetails(req,res,next){
         const memberSchema = Joi.object({
             name: Joi.string().required(),
             address:Joi.string().required(),
-            email:Joi.string().required(),
+           phoneNumber:Joi.string().required(),
+           cnic:Joi.string().required(),
+           member_id:Joi.required()
             
         })
         const {error} = memberSchema.validate(req.body);
         if(error){
             return next(error);
         }
-        const { name, address, phoneNumber,cnic} = req.body;
+        const { name, address, phoneNumber,cnic,member_id} = req.body;
         let member;
         try {
             const memberToRegister = new memberModel({
-                name,address,email,phoneNumber,cnic
+                name,address,phoneNumber,cnic,member_id
             });
+
             member = await memberToRegister.save();
         } catch (error) {
             return next(error);
         }
-        res.status(201).json({data:member,msg:"Member credentials saved successfully"});
+        let updatingApplicationStatus;
+       try {
+        const getMember = await memberReg.findOne({member_id});
+         updatingApplicationStatus = await memberReg.updateOne({getMember},
+            { $set: {ApplicationStatus:true}},
+            {new:true}
+            )
+       } catch (error) {
+        return next(error);
+       }
+        res.status(201).json({data:member,statusUpdated:updatingApplicationStatus,msg:"Member details saved successfully"});
     },
+  
+
     async login(req,res,next){
+        const userSchema = Joi.object({
+            email: Joi.string().email().required(),
+            password:Joi.string().required("Password must be atleast 8 character")
+        });
+        const {error}= userSchema.validate(req.body);
+        if(error){
+            return next(error);
+        }
+        const{email,password} = req.body;
+       let user;
+       try{
+        user = await memberReg.findOne({email:email});
+        if(!user){
+            const error={
+                status:409,
+                message:"Invalid Username"
+            }
+            return res.status(error.status).json({msg:error.message});
+        }
+        const match = await bycrypt.compare(password,user.password);
+        if(!match){
+            const error={
+                status:409,
+                message:"Invalid Password"
+            }
+            return res.status(error.status).json({msg:error.message});
+        }
+
+       }catch(error){
+        return next(error);
+       }
+       const accessToken = JWTService.SignAccessToken({_id:user._id},'30m');
+       const refreshToken = JWTService.SignRefreshToken({_id:user._id},'30m')
+
+       //store token in DB
+       try{
+           RefreshToken.updateOne({
+               _id:user._id
+           },
+           {token:refreshToken},
+           {upsert:true}
+           );
+       }
+       catch(error){
+           return next(error);
+       }
+       
+       res.cookie('accessToken',accessToken,{
+           maxAge:1000*60*60*24,
+           httpOnly:true
+       });
+
+       res.cookie('refreshToken',refreshToken,{
+           maxAge:1000*60*60*24,
+           httpOnly: true
+       });
+     
+       let role;
+       try {
+            role = await Role.findById(user.role).populate({
+                path:"role"
+            })
+       } catch (error) {
+        return next(error);
+       }
+
+      
+       let data;
+       try {
+           data = await memberModel.findOne({member_id:user._id}).populate({
+               path:"member_id",
+               populate:{
+                   path:"role",
+                   populate:{
+                       path:"permission.Permission_id"
+                   }
+               }
+           });
+       } catch (error) {
+         return next(error);  
+       }
+
+       res.status(200).json({Data:data, msg:`Logged in as ${role.role}`, auth:true});
         
     },
+
+
+
     async all(req,res,next){
-        
+        let users = {};
+        try {
+            users = await memberModel.find({}).populate({               
+                    path:'member_id',
+              });
+            
+        } catch (error) {
+                return next(error);
+        }
+        res.status(200).json({
+            data:users,
+            msg:"ALL USERS FETCHED SUCCESSFULLY"
+        })
     },
+
+
+
+
     async getById(req,res,next){
-        
+        const {id} = req.params;
+        let user;
+        try {
+            const userExists = await memberModel.exists({_id:id});
+            if(!userExists){
+                const error = {
+                    status:404,
+                    message:"Member Not Found"
+                }
+                return next(error);
+            }
+            user = await memberModel.findOne({_id:id}).populate({
+                path:"member_id",
+                populate:{
+                    path:"role",
+                    populate:{
+                        path:"permission.Permission_id"
+                    }
+                }
+            });
+        } catch (error) {
+          return next(error);  
+        }
+        res.status(200).json({data:user,msg:"Member Information fetched successfully"})
     },
+
+
     async delete(req,res,next){
-        
+        const {id} = req.params;
+        try {
+            
+        } catch (error) {
+            return next(error);
+        }
     },
+
+
+
+
+
     async update(req,res,next){
-        
+        const updatedSchema =Joi.object({
+            name:Joi.string(),
+            address:Joi.string(),
+            phoneNumber:Joi.string(),
+            cnic:Joi.string(),
+        });
+        const {error} = updatedSchema.validate(req.body);
+        if(error){
+            return next(error);
+        }
+        const {name,address,phoneNumber,cnic} = req.body;
+
+        const {id} = req.params;
+        let getData;
+        try {
+            const userId = await memberReg.findOne({_id:id});
+           getData = await memberModel.findOne({member_id:userId._id});
+        } catch (error) {
+          return next(error);  
+        }
+       const alreadyInsertedData={
+        name:getData.name,
+        address:getData.address,
+        phoneNumber: getData.phoneNumber,
+        cnic: getData.cnic,
+        };
+        if(name==''){
+            name = alreadyInsertedData.name;
+        }
+        if(address==''){
+            address = alreadyInsertedData.address
+        }
+        if(phoneNumber==''){
+            address = alreadyInsertedData.phoneNumber
+        }
+        if(cnic==''){
+            address = alreadyInsertedData.cnic;
+        }
+        let updatedData;
+        try {
+             updatedData = await getData.updateOne({
+                name:name,
+                address:address,
+                phoneNumber:phoneNumber,
+                cnic:cnic
+            });
+        } catch (error) {
+            return next(error);
+        }
+
+        res.status(200).json({data:updatedData,msg:"Member Information updated successfully"})
     }
 }
+
+
 module.exports = memberController;
