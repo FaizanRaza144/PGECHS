@@ -10,9 +10,9 @@ const adminController = require('../controllers/adminController');
 route.post('/admin',adminController.login);
 route.put('/admin/passwordReset/:id',adminController.passwordReset);
 route.post('/admin/permissions',adminController.permissions);
-route.get('/admin/getAllUsers',adminController.getAllUser);
 route.post('/admin/role',adminController.role);
-route.get('/admin/role/getAllRoles',adminController.getAllRoles);
+route.get('/admin/getAllUsers',adminController.getAllUsers);
+route.get('/admin/role/getAllRoles',adminController.getAllUsers);
 route.post('/admin/Register',adminController.Register);
 route.post('/admin/logout',adminController.logout);
 

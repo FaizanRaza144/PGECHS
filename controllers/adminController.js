@@ -303,19 +303,6 @@ const adminController = {
 
         res.status(200).json({user:null, auth:false})
     },
-    async getAllUser(req,res,next){
-        let users = {};
-        try {
-            users = await User.find({});
-            
-        } catch (error) {
-                return next(error);
-        }
-        res.status(200).json({
-            data:users,
-            msg:"ALL USERS FETCHED SUCCESSFULLY"
-        })
-    },
 
     async getAllRoles(req,res,next){
         let users = {};
@@ -331,9 +318,28 @@ const adminController = {
         }
         res.status(200).json({
             data:users,
+            msg:"ALL ROLES FETCHED SUCCESSFULLY"
+        })
+    },
+    async getAllUsers(req,res,next){
+        let users = {};
+        try {
+            users = await User.find({}).populate({
+               
+                    path:'role',
+                    populate:{
+                        path:'permission.Permission_id'
+                    }
+              });
+            
+        } catch (error) {
+                return next(error);
+        }
+        res.status(200).json({
+            data:users,
             msg:"ALL USERS FETCHED SUCCESSFULLY"
         })
-    }
+    },
 }
 
 module.exports = adminController;
