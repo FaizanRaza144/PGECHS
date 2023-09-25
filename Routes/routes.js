@@ -13,13 +13,16 @@ route.get("/", (req, res) => {
 route.post('/admin',adminController.login);
 route.put('/admin/passwordReset/:id',adminController.passwordReset);
 route.post('/admin/permissions',adminController.permissions);
-route.post('/admin/memberRegister',adminController.registerMember);
 route.get('/admin/getAllUsers',adminController.getAllUser);
 route.post('/admin/role',adminController.role);
 route.get('/admin/role/getAllRoles',adminController.getAllRoles);
 route.post('/admin/Register',adminController.Register);
 route.post('/admin/logout',adminController.logout);
+
+
 //MEMBERS MANAGEMENT******************************************************
+
+
 //Members login Route
 route.post('/members',memberController.login);
 

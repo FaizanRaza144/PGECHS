@@ -320,13 +320,10 @@ const adminController = {
     async getAllRoles(req,res,next){
         let users = {};
         try {
-            users = await role.find({})  .populate({
-                path: 'role',
-                populate: {
-                  path: 'permission.Permission_id',
-                  model:"Permissions",
-                  select:"permissionName"
-                },
+            users = await role.find({}).populate({
+               
+                    path:'permission.Permission_id'
+
               });
             
         } catch (error) {
