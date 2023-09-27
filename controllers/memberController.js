@@ -5,7 +5,20 @@ const Joi = require('joi');
 const JWTService = require('../services/JWTservice')
 const bycrypt = require('bcryptjs');
 const RefreshToken = require('../models/token');
+const multer = require('multer');
 
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'LocalStorage/');
+    },
+    filename: (req, file, cb) => {
+        const ext = path.extname(file.originalname);
+        cb(null, `${file.fieldname}-${Date.now()}${ext}`);
+    },
+});
+
+const upload = multer({ storage: storage });
 
 const memberController = {
 
@@ -79,7 +92,10 @@ const memberController = {
     },
 
 
+    
     async addDetails(req,res,next){
+        
+
         const memberSchema = Joi.object({
             name: Joi.string().required(),
             address:Joi.string().required(),
@@ -92,11 +108,22 @@ const memberController = {
         if(error){
             return next(error);
         }
+        const uploadedFiles = req.files;
+         
+
         const { name, address, phoneNumber,cnic,member_id} = req.body;
+    
         let member;
         try {
             const memberToRegister = new memberModel({
-                name,address,phoneNumber,cnic,member_id
+                name,address,phoneNumber,cnic,member_id,
+                allotmentCertificate: uploadedFiles['allotmentCertificate'][0],
+                membershipTransfer: uploadedFiles['membershipTransfer'][0],
+                applicationForm: uploadedFiles['applicationForm'][0],
+                underTaking: uploadedFiles['underTaking'][0],
+                affidavit: uploadedFiles['affidavit'][0],
+                transferImage: uploadedFiles['transferImage'][0],
+                mergedPDF: uploadedFiles['mergedPDF'][0],
             });
 
             member = await memberToRegister.save();
@@ -322,6 +349,9 @@ const memberController = {
         res.status(200).json({data:updatedData,msg:"Member Information updated successfully"})
     }
 }
+
+
+
 
 
 module.exports = memberController;

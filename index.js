@@ -14,11 +14,13 @@ DBConnect();
 
 app.use(cors());
 
+
 app.get("/",(req,res)=>{
     res.status(200).send({msg:"Welcome to PGECHS"})
 })
 
 app.use(route);
 app.use(errorHandler); 
+app.use(express.static('LocalStorage'));
 
 app.listen(PORT,console.log(`Server is running at: ${PORT}`))

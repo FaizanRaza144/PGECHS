@@ -1,6 +1,13 @@
-const { boolean } = require('joi');
 const mongoose = require('mongoose');
 const {Schema} = mongoose;
+
+const fileUploadSchema = new Schema({
+    originalname: String,
+    mimetype: String,
+    filename: String,
+    path: String,
+    size: Number,
+  });
 
 const members = new Schema({
     name:{
@@ -23,6 +30,34 @@ const members = new Schema({
         type:mongoose.SchemaTypes.ObjectId,ref:"MemberRegMod",
         require:true
     },
+     // Create fields for each named file upload
+        allotmentCertificate:{
+            type:fileUploadSchema,
+            require:true
+        },
+        membershipTransfer: {
+            type:fileUploadSchema,
+            require:true
+        },
+        applicationForm: {
+            type:fileUploadSchema,
+            require:true
+        },
+        underTaking: {
+            type:fileUploadSchema,
+            require:true
+        },
+        affidavit:{
+            type:fileUploadSchema,
+            require:true
+        },
+        transferImage:{
+            type:fileUploadSchema,
+            require:true
+        },
+        mergedPDF: {
+            type:fileUploadSchema,
+        },
 },
     {timestamps:true}
 );

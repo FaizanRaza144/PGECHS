@@ -27,7 +27,38 @@ route.post('/members',memberController.login);
 
 //Members Register Route
 route.post('/members/membersRegister',memberController.register);
-route.post('/members/addDetails',memberController.addDetails);
+
+
+
+const multer = require('multer');
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'LocalStorage/'); // Specify the upload destination folder
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${file.fieldname}-${Date.now()}-${file.originalname}`);
+    },
+});
+
+const upload = multer({ storage: storage });
+
+route.post('/members/addDetails', upload.fields([
+    { name: 'allotmentCertificate', maxCount: 1 },
+    { name: 'membershipTransfer', maxCount: 1 },
+    { name: 'applicationForm', maxCount: 1 },
+    { name: 'underTaking', maxCount: 1 },
+    { name: 'affidavit', maxCount: 1 },
+    { name: 'transferImage', maxCount: 1 },
+    { name: 'mergedPDF', maxCount: 1 },
+]),memberController.addDetails);
+
+
+
+
+
+
+
 //View ALL members
 route.get('/members/all',memberController.all);
 
