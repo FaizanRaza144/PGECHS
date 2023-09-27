@@ -8,18 +8,6 @@ const RefreshToken = require('../models/token');
 const multer = require('multer');
 
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'LocalStorage/');
-    },
-    filename: (req, file, cb) => {
-        const ext = path.extname(file.originalname);
-        cb(null, `${file.fieldname}-${Date.now()}${ext}`);
-    },
-});
-
-const upload = multer({ storage: storage });
-
 const memberController = {
 
 
