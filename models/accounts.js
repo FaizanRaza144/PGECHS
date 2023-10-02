@@ -2,10 +2,7 @@ const mongoose = require('mongoose');
 const {Schema} = mongoose;
 
 const accounts = new Schema({
-    phase:{
-        type:String,
-        require:true
-    },
+
     plotID:{
         type:mongoose.SchemaTypes.ObjectId, ref:'Plot',
         require:true
@@ -18,10 +15,7 @@ const accounts = new Schema({
         type:mongoose.SchemaTypes.ObjectId, ref:'Ledger',
         require:true
     },
-    charges:{
-        type:String,
-        require:true
-    },
+  
 },
     {timestamps:true}
 );

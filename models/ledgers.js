@@ -1,14 +1,16 @@
+const { date } = require('joi');
+const { ObjectId } = require('mongodb');
 const mongoose = require('mongoose');
 const {Schema} = mongoose;
 
 const ledger = new Schema({
-    LedgerID:{
-        type:Number,
+    MemberID:{
+        type: mongoose.SchemaTypes.ObjectId,ref:'Member',
         require:true
     },
     date:{
         type:Date,
-        require:true
+        require:true,
     },
     particulars:{
         type:String,
@@ -33,6 +35,10 @@ const ledger = new Schema({
     balance:{
         type:Number,
         require:true
+    },
+    LedgerStatus:{
+        type:Boolean,
+        default:true
     }
 },
     {timestamps:true}

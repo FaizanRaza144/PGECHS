@@ -3,6 +3,10 @@ const mongoose = require('mongoose');
 const{Schema} = mongoose;
 
 const plots = new Schema({
+    MemberID:{
+        type: mongoose.SchemaTypes.ObjectId,ref:'Member',
+        require:true
+    },
     plotID:{
         type:Number,
         require:true
@@ -12,20 +16,27 @@ const plots = new Schema({
         require:true
     },
     plotType:{
-        type:true,
+        type:String,
         require:true
     },
     sqFeet:{
         type:String,
         require:true
     },
-    price:{
-        type:Number,
+    location:{
+        type:String,
+        require:true
+    },
+    street:{
+        type:String,
+        require:true
+    },
+    block:{
+        type:String,
         require:true
     },
     status:{
-        type: boolean,
-        require:true,
+        type: Boolean,
         default:true
     }
 },
