@@ -246,7 +246,7 @@ const memberController = {
         const { id } = req.params;
         let user;
         try {
-            const userExists = await memberModel.exists({ _id: id });
+            const userExists = await memberReg.exists({ _id: id });
             if (!userExists) {
                 const error = {
                     status: 404,
@@ -254,7 +254,8 @@ const memberController = {
                 }
                 return next(error);
             }
-            user = await memberModel.findOne({ _id: id }).populate({
+            const getUser = await memberReg.findOne({_id:id});
+            user = await memberModel.findOne({ member_id: getUser._id }).populate({
                 path: "member_id",
                 populate: {
                     path: "role",
