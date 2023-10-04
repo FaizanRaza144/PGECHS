@@ -43,7 +43,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-route.post('/members/addDetails', upload.fields([
+route.post('/members/addDetails/:id', upload.fields([
     { name: 'allotmentCertificate', maxCount: 1 },
     { name: 'membershipTransfer', maxCount: 1 },
     { name: 'applicationForm', maxCount: 1 },
