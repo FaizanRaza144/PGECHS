@@ -120,8 +120,8 @@ const memberController = {
         }
         let updatingApplicationStatus;
         try {
-            console.log("MemberID inital " + member_id)
-            const getMember = await memberReg.findOne({ _id: member_id });
+            console.log("MemberID inital " + id)
+            const getMember = await memberReg.findOne({ _id: id });
             console.log("MemberID " + getMember)
             updatingApplicationStatus = await memberReg.updateOne({ _id: getMember },
                 { $set: { ApplicationStatus: true } },
