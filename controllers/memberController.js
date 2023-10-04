@@ -89,7 +89,6 @@ const memberController = {
             address: Joi.string().required(),
             phoneNumber: Joi.string().required(),
             cnic: Joi.string().required(),
-            member_id: Joi.required()
 
         })
         const { error } = memberSchema.validate(req.body);
@@ -99,12 +98,13 @@ const memberController = {
         const uploadedFiles = req.files;
 
 
-        const { name, address, phoneNumber, cnic, member_id } = req.body;
+        const { name, address, phoneNumber, cnic } = req.body;
+        const {id}=req.params;
 
         let member;
         try {
             const memberToRegister = new memberModel({
-                name, address, phoneNumber, cnic, member_id,
+                name, address, phoneNumber, cnic, member_id:id,
                 allotmentCertificate: uploadedFiles['allotmentCertificate'][0],
                 membershipTransfer: uploadedFiles['membershipTransfer'][0],
                 applicationForm: uploadedFiles['applicationForm'][0],
