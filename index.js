@@ -12,7 +12,7 @@ app.use(express.json());
 
 DBConnect();
 
-const allowedOrigins = ['https://pgechs-testing.vercel.app'];
+const allowedOrigins = ['http://localhost:3000'];
 
 app.use(
   cors({
