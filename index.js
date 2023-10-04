@@ -12,7 +12,20 @@ app.use(express.json());
 
 DBConnect();
 
-app.use(cors());
+const allowedOrigins = ['https://pgechs-testing.vercel.app'];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Check if the origin is in the allowedOrigins array
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+  })
+);
 
 
 app.get("/",(req,res)=>{
