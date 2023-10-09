@@ -6,30 +6,31 @@ const LedgerModel = require('../models/ledgers');
 const ledger = {
     async add(req, res, next) {
         const ledgerSchema = Joi.object({
-            MemberID: Joi.string().required(),
             particulars: Joi.string().required(),
             chequeOrDraft: Joi.string().required(),
-            Slip: Joi.number().required(),
+            Slip: Joi.string().required(),
             debit: Joi.number().required(),
             credit: Joi.number().required(),
             balance: Joi.number().required(),
+            date:Joi.date().required()
         });
         const { error } = ledgerSchema.validate(req.body);
         if (error) {
             return next(error);
         }
-        const { MemberID, particulars, chequeOrDraft, Slip, debit, credit, balance } = req.body;
+        const { particulars, chequeOrDraft, Slip, debit, credit, balance,date } = req.body;
+        const {id} = req.params
         let ledger;
         try {
             const ledgerToAdd = new LedgerModel({
-                MemberID: MemberID,
+                MemberID: id,
                 particulars: particulars,
                 chequeORdraft: chequeOrDraft,
                 Slip: Slip,
                 debit: debit,
                 credit: credit,
                 balance: balance,
-                date: new Date()
+                date: date,
             });
             ledger = await ledgerToAdd.save();
         } catch (error) {
@@ -38,6 +39,8 @@ const ledger = {
         res.status(200).json({ data: ledger, msg: "Ledger Added Successfully" });
 
     },
+
+
     async all(req, res, next) {
         const{id} = req.params;
         let ledgers;
@@ -56,6 +59,8 @@ const ledger = {
         res.status(200).json({data:ledgers,msg:"All Ledgers of member fetched successfully"});
 
     },
+
+
     async getById(req, res, next) {
         const {id} = req.params;
         let ledger;
@@ -69,6 +74,8 @@ const ledger = {
             msg:"Ledger Fetched Successfully"
         });
     },
+
+
     async delete(req, res, next) {
         const {id} = req.params;
         let status;
@@ -79,23 +86,35 @@ const ledger = {
         }
         res.status(200).json({msg:"Ledger deleted successfully", data:status });
     },
-    async updateStatus(req, res, next) {
-        const {id}= req.params;
-        let updatedStatus;
-        try{
-            const getledger = await LedgerModel.findById(id);
-            updatedStatus = await LedgerModel.updateOne({_id:getledger._id},
-                { $set: { LedgerStatus: false } },
-                { new: true }
-                )
-        }catch(error){
+
+    async update(req, res, next) {
+        const { id } = req.params;
+        const {
+            particulars, chequeOrDraft, Slip, debit, credit, balance,date
+        } = req.body;
+    
+        try {
+            // Create an object with the fields you want to update
+            const updates = {
+                particulars, chequeOrDraft, Slip, debit, credit, balance,date
+            };
+    
+            // Find the document by ID and update it with the provided updates
+            const updatedStatus = await LedgerModel.findByIdAndUpdate(id, updates, { new: true });
+    
+            if (!updatedStatus) {
+                // If the document was not found, return an error
+                return res.status(404).json({ msg: 'Plot not found' });
+            }
+    
+            res.status(200).json({
+                data: updatedStatus,
+                msg: "Ledger updated Successfully"
+            });
+        } catch (error) {
             return next(error);
         }
-        res.status(200).json({
-            data:updatedStatus,
-            msg:"Ledger Status updated Successfully"
-        })
-    }
+    },
 }
 
 module.exports = ledger;

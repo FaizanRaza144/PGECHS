@@ -12,7 +12,7 @@ route.put('/admin/passwordReset/:id', adminController.passwordReset);
 route.post('/admin/permissions', adminController.permissions);
 route.post('/admin/role', adminController.role);
 route.get('/admin/getAllUsers', adminController.getAllUsers);
-route.get('/admin/role/getAllRoles', adminController.getAllUsers);
+route.get('/admin/role/getAllRoles', adminController.getAllRoles);
 route.post('/admin/Register', adminController.Register);
 route.post('/admin/logout', adminController.logout);
 
@@ -78,7 +78,7 @@ route.delete('/members/delete/:id', memberController.delete);
 
 //PLOTS**************************************************************
 //Add Plots
-route.post('/plots/add', plotController.add);
+route.post('/plots/add/:id', plotController.add);
 
 //Add pLot
 route.get('/plots/all/:id', plotController.all);
@@ -100,10 +100,13 @@ route.put('/accounts/:id', accounts.update);
 route.delete('/account/:id', accounts.delete);
 
 //LEDGERS**********************************************************************done
-route.post('/ledger/add', ledger.add);
+route.post('/ledger/add/:id', ledger.add);
 route.get('/ledger/all/:id', ledger.all);
 route.get('/ledger/getById/:id', ledger.getById);
-route.put('/ledger/updateStatus/:id', ledger.updateStatus);
+route.put('/ledger/updateStatus/:id', ledger.update);
 route.delete('/ledger/delete/:id', ledger.delete);
+
+
+
 
 module.exports = route;

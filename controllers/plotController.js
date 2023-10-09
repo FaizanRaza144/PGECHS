@@ -5,11 +5,12 @@ const PlotsModel = require('../models/plots')
 
 const plotController = {
     async add(req, res, next) {
+
         const plotToRegister = Joi.object({
-            MemberID:Joi.string().required(),
+
             plotID: Joi.string().required(),
-            dimensions: Joi.string().required(),
             plotType: Joi.string().required(),
+            dimensions: Joi.string().required(),
             sqFeet: Joi.string().required(),
             location: Joi.string().required(),
             street: Joi.string().required(),
@@ -19,10 +20,14 @@ const plotController = {
         if (error) {
             return next(error);
         }
-        const { MemberID, plotID, dimensions, plotType, sqFeet, location, street, block } = req.body;
+        const { plotID, plotType, dimensions, sqFeet, location, street, block } = req.body;
+        const { id } = req.params;
         let plot;
         try {
-            const plotExists = await PlotsModel.exists({plotID:plotID});
+
+            const plotExists = await PlotsModel.exists({ plotID });
+
+
             if (plotExists) {
                 const error = {
                     status: 409,
@@ -30,11 +35,12 @@ const plotController = {
                 }
                 return next(error);
             }
+
             const assignPlot = new PlotsModel({
-                MemberID: MemberID,
+                MemberID: id,
                 plotID: plotID,
-                dimensions: dimensions,
                 plotType: plotType,
+                dimensions: dimensions,
                 sqFeet: sqFeet,
                 location: location,
                 street: street,
@@ -46,74 +52,104 @@ const plotController = {
             return next(error);
         }
         res.status(200).json({
-            data:plot,
-            msg:"PLOTS ASSIGNED TO MEMBER"
+            data: plot,
+            msg: "PLOTS ASSIGNED TO MEMBER"
         })
 
 
     },
+
+
     async all(req, res, next) {
-        const{id} = req.params;
+        const { id } = req.params;
         let plots;
         try {
-             plots = await PlotsModel.find({MemberID:id}).populate({
-                path:"MemberID",
-                populate:{
-                    path:"member_id"
+            plots = await PlotsModel.find({ MemberID: id }).populate({
+                path: "MemberID",
+                populate: {
+                    path: "member_id"
                 }
-             });         
-            
-             console.log("Plots: "+plots)
+            });
+
+            console.log("Plots: " + plots)
         } catch (error) {
             return next(error);
         }
-        res.status(200).json({data:plots,msg:"All plots of member fetched successfully"});
+        res.status(200).json({ data: plots, msg: "All plots of member fetched successfully" });
     },
+
+
+    
     async getById(req, res, next) {
-        const {id} = req.params;
+        const { id } = req.params;
         let plots;
         try {
-            plots = await PlotsModel.find({_id:id}).populate({
-                path:"MemberID",
-                populate:{
-                    path:"member_id"
+            plots = await PlotsModel.find({ _id: id }).populate({
+                path: "MemberID",
+                populate: {
+                    path: "member_id"
                 }
             });
         } catch (error) {
             return next(error);
         }
         res.status(200).json({
-            data:plots,
-            msg:"Plot Details Fetched Successfully"
+            data: plots,
+            msg: "Plot Details Fetched Successfully"
         });
     },
     async delete(req, res, next) {
-        const {id} = req.params;
+        const { id } = req.params;
         let status;
         try {
-            status = await PlotsModel.findByIdAndDelete(id)
+            status = await PlotsModel.findById(id)
         } catch (error) {
             return next(error);
         }
-        res.status(200).json({msg:"plot deleted successfully", data:status });
+        status.deleteOne();
+        res.status(200).json({ msg: "plot deleted successfully", data: status });
     },
     async update(req, res, next) {
-        const {id}= req.params;
-        let updatedStatus;
-        try{
-            const getplot = await PlotsModel.findById(id);
-            updatedStatus = await PlotsModel.updateOne({_id:getplot._id},
-                { $set: { status: false } },
-                { new: true }
-                )
-        }catch(error){
+        const { id } = req.params;
+        const {
+            plotID,
+            plotType,
+            dimensions,
+            sqFeet,
+            location,
+            street,
+            block
+        } = req.body;
+    
+        try {
+            // Create an object with the fields you want to update
+            const updates = {
+                plotID,
+                plotType,
+                dimensions,
+                sqFeet,
+                location,
+                street,
+                block
+            };
+    
+            // Find the document by ID and update it with the provided updates
+            const updatedStatus = await PlotsModel.findByIdAndUpdate(id, updates, { new: true });
+    
+            if (!updatedStatus) {
+                // If the document was not found, return an error
+                return res.status(404).json({ msg: 'Plot not found' });
+            }
+    
+            res.status(200).json({
+                data: updatedStatus,
+                msg: "Plot Status updated Successfully"
+            });
+        } catch (error) {
             return next(error);
         }
-        res.status(200).json({
-            data:updatedStatus,
-            msg:"Plots Status updated Successfully"
-        });    
     }
+    
 }
 
 module.exports = plotController;

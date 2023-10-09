@@ -32,7 +32,7 @@ const memberController = {
                     status: 409,
                     message: "Member already exists"
                 }
-                return res.status(error.status).json({ msg: error.message });
+                return res.status(409).json({ message:"Member Already Exists" });
             }
         } catch (error) {
             return next(error);
@@ -76,35 +76,36 @@ const memberController = {
             });
 
         } catch (error) { return next(error) }
-        res.status(201).json({ Data: user, msg: `${rol.role} has been successfully registered` });
+        res.status(200).json({ Data: user, msg: `${rol.role} has been successfully registered` });
     },
 
 
 
     async addDetails(req, res, next) {
-
-
         const memberSchema = Joi.object({
             name: Joi.string().required(),
             address: Joi.string().required(),
             phoneNumber: Joi.string().required(),
             cnic: Joi.string().required(),
-
-        })
+        });
+    
         const { error } = memberSchema.validate(req.body);
         if (error) {
             return next(error);
         }
+    
         const uploadedFiles = req.files;
-
-
         const { name, address, phoneNumber, cnic } = req.body;
-        const {id}=req.params;
-
+        const { id } = req.params;
+    
         let member;
         try {
             const memberToRegister = new memberModel({
-                name, address, phoneNumber, cnic, member_id:id,
+                name,
+                address,
+                phoneNumber,
+                cnic,
+                member_id: id,
                 allotmentCertificate: uploadedFiles['allotmentCertificate'][0],
                 membershipTransfer: uploadedFiles['membershipTransfer'][0],
                 applicationForm: uploadedFiles['applicationForm'][0],
@@ -113,25 +114,47 @@ const memberController = {
                 transferImage: uploadedFiles['transferImage'][0],
                 mergedPDF: uploadedFiles['mergedPDF'][0],
             });
-
+    
             member = await memberToRegister.save();
         } catch (error) {
             return next(error);
         }
+    
         let updatingApplicationStatus;
         try {
-            console.log("MemberID inital " + id)
+            console.log("MemberID initial " + id);
             const getMember = await memberReg.findOne({ _id: id });
-            console.log("MemberID " + getMember)
-            updatingApplicationStatus = await memberReg.updateOne({ _id: getMember },
+            console.log("MemberID " + getMember);
+            updatingApplicationStatus = await memberReg.updateOne(
+                { _id: getMember },
                 { $set: { ApplicationStatus: true } },
                 { new: true }
-            )
+            );
         } catch (error) {
             return next(error);
         }
-        res.status(201).json({ data: member, statusUpdated: updatingApplicationStatus, msg: "Member details saved successfully" });
+    
+        // Create an object with the file URLs
+        const fileUrls = {
+            allotmentCertificate: member.allotmentCertificate,
+            membershipTransfer: member.membershipTransfer,
+            applicationForm: member.applicationForm,
+            underTaking: member.underTaking,
+            affidavit: member.affidavit,
+            transferImage: member.transferImage,
+            mergedPDF: member.mergedPDF,
+        };
+    
+        // Send the API response with file URLs
+        res.status(201).json({
+            data: member,
+            statusUpdated: updatingApplicationStatus,
+            fileUrls: fileUrls, // Include the file URLs in the response
+            msg: "Member details saved successfully",
+        });
     },
+    
+    
 
 
     async login(req, res, next) {
@@ -251,10 +274,10 @@ const memberController = {
                 const error = {
                     status: 404,
                     message: "Member Not Found"
-                }
+                };
                 return next(error);
             }
-            const getUser = await memberReg.findOne({_id:id});
+            const getUser = await memberReg.findOne({ _id: id });
             user = await memberModel.findOne({ member_id: getUser._id }).populate({
                 path: "member_id",
                 populate: {
@@ -267,8 +290,9 @@ const memberController = {
         } catch (error) {
             return next(error);
         }
-        res.status(200).json({ data: user, msg: "Member Information fetched successfully" })
+        res.status(200).json({ data: user, msg: "Member Information fetched successfully" });
     },
+    
 
 
     async delete(req, res, next) {
@@ -285,12 +309,15 @@ const memberController = {
                 }
                 return next(error);
             }
-            userR = await memberModel.findOne(findUser);
-            const getMember = await memberReg.findOne(userR.member_id);
-            userReg = await memberReg.updateOne({ _id: getMember },
-                { $set: { ApplicationStatus: false } },
-                { new: true }
+          
+           
+           const getMember = await memberReg.findOne(findUser.member_id);
+           userReg = await memberReg.updateOne({ _id: getMember },
+               { $set: { ApplicationStatus: false } },
+               { new: true }
             );
+            userR = findUser;
+            
             findUser.deleteOne();
         } catch (error) {
             return next(error);
@@ -316,7 +343,7 @@ const memberController = {
             });
         }
 
-        res.status(201).json({
+        res.status(200).json({
             msg: "Member Data Deleted Successfully",
             data: userReg
         });

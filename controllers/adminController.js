@@ -76,7 +76,7 @@ const adminController = {
         } catch (error) {
             return next(error);
         }
-        res.status(200).json({ Data: user, msg: `Logged in as ${role.role}`, auth: true });
+        res.status(200).json({ Data: user, token:accessToken ,msg: `Logged in as ${role.role}`, auth: true });
 
     },
 
@@ -219,8 +219,8 @@ const adminController = {
 
     async Register(req, res, next) {
         const userSchema = Joi.object({
-            username: Joi.string().min(3).max(15).required(),
-            password: Joi.string().min(5).max(15).required(),
+            username: Joi.string().required(),
+            password: Joi.string().required(),
             role: Joi.string().required(),
         });
         const { error } = userSchema.validate(req.body);
@@ -237,7 +237,7 @@ const adminController = {
                     status: 409,
                     message: "Username already exists"
                 }
-                return res.status(error.status).json({ msg: error.message });
+                return res.status(409).json({message:"Username Already Exists"});
             }
         } catch (error) {
             return next(error);
@@ -281,7 +281,7 @@ const adminController = {
             console.log("role: " + rol);
 
         } catch (error) { return next(error) }
-        res.status(201).json({ Data: user, msg: `${rol.role} has been successfully registered` });
+        res.status(200).json({ Data: user, msg: `${rol.role} has been successfully registered` });
     },
 
     async logout(req, res, next) {
@@ -321,6 +321,8 @@ const adminController = {
             msg: "ALL ROLES FETCHED SUCCESSFULLY"
         })
     },
+
+    
     async getAllUsers(req, res, next) {
         let users = {};
         try {

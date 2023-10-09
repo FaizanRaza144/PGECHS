@@ -1,0 +1,26 @@
+.long-text-column {
+    position: relative;
+    display: inline-block;
+    max-width: 150px; 
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .long-text-column2 {
+    /* position: relative;
+    display: inline-block;
+    max-width: 100px; 
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis; */
+  }
+  
+  .show-more {
+    display: block;
+    color: #007ad9;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: bold;
+    margin-top: 5px;
+  }
+  

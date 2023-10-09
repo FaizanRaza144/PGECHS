@@ -5,7 +5,8 @@ const DBConnect = require('./Database/database');
 const route = require('./Routes/routes');
 const errorHandler = require('./middleware/errorHandler');
 const cors = require('cors');
-
+const path = require('path');
+const fs = require('fs')
 
 app.use(express.json());
 
@@ -34,6 +35,29 @@ app.get("/",(req,res)=>{
 
 app.use(route);
 app.use(errorHandler); 
+
 app.use(express.static('LocalStorage'));
+
+app.use('/files', express.static(path.join(__dirname, 'LocalStorage')));
+
+// Your API route to retrieve files
+app.get('/get-file/:filename', (req, res) => {
+  const { filename } = req.params;
+  const filePath = path.join(__dirname, 'LocalStorage', filename);
+
+  // Check if the file exists
+  if (fs.existsSync(filePath)) {
+    // Send the file as a response
+    res.sendFile(filePath);
+  } else {
+    // Handle the case when the file does not exist
+    res.status(404).send('File not found');
+  }
+});
+
+  
+ 
+  
+
 
 app.listen(PORT,console.log(`Server is running at: ${PORT}`))

@@ -8,7 +8,7 @@ const plots = new Schema({
         require:true
     },
     plotID:{
-        type:Number,
+        type:String,
         require:true
     },
     dimensions:{

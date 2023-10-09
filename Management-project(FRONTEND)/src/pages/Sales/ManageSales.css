@@ -1,0 +1,93 @@
+.addnewbutton {
+    display: flex;
+    justify-content: flex-end;
+    justify-content: space-between;
+    color: rgb(6, 6, 6);
+}
+
+label {
+    margin-top: 15px;
+}
+
+.tableheading {
+    display: flex !important;
+    justify-content: start;
+    color: aliceblue;
+}
+
+.edit-icon-background{
+    font-size: 18px;
+    background-color: rgb(79, 193, 109);
+    border-radius: 50%;
+    padding: 15px;
+    color: rgb(255, 255, 255);
+    border: 0px;
+}
+.delete-icon-background{
+    font-size: 18px;
+
+    color: rgb(255, 255, 255);
+    background-color: rgb(236, 14, 14);
+    border-radius: 50%;
+    padding: 15px;
+    border: 0px;
+}
+.view-icon-background{
+    font-size: 18px;
+    color: rgb(255, 255, 255);
+    background-color: rgb(152, 238, 255 );
+    border-radius: 50%;
+    padding: 15px;
+    border: 0px;
+}
+.add-icon-background{
+    font-size: 18px;
+    color: rgb(255, 255, 255);
+    background-color: rgb(152, 147, 255);
+    border-radius: 50%;
+    padding: 15px;
+    border: 0px;
+}
+/* #6366F1 */
+.tableheading>i {
+    padding-top: 25px;
+    padding-right: 10px;
+
+}
+
+.sub-button{
+    padding-left: 20px;
+}
+
+.card {
+    background-color: rgb(255, 255, 255);
+}
+
+.namecontact {
+    display: flex;
+    flex-direction: row;
+}
+
+.icons {
+    display: flex !important;
+    justify-content: end;
+}
+
+.cus-buton {
+    margin-top: 20px;
+    display: flex !important;
+    justify-content: end;
+}
+
+@media(max-width: 1082px) and (min-width: 990px) {
+    label {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 767px) {
+    .icons {
+        display: flex !important;
+        justify-content: start;
+    }
+}

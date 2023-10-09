@@ -1,0 +1,33 @@
+.doughnut-inline{
+    display: flex;
+    justify-content: space-around;
+}
+/* rgb(64, 141, 61) */
+.doughnut{
+    display: flex;
+    justify-content: space-around;
+}
+
+.item-center{
+    display: flex;
+    justify-content: center;
+}
+.height-chart{
+    height: 1%;
+}
+
+@media (max-width: 900px)
+{
+    .doughnut{
+        .doughnut{
+            display: flex;
+            justify-content: space-around;
+        }
+    }
+    .martop{
+        margin-top: 80px;
+    }
+    /* .text-small{
+       font-size: 10px;
+    } */
+}

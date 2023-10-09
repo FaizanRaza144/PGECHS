@@ -21,7 +21,7 @@ const ledger = new Schema({
         require:true
     },
     Slip:{
-        type:Number,
+        type:String,
         require:true
     },
     debit:{
