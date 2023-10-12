@@ -201,7 +201,7 @@ const handleDEORegistration = async () => {
                 <div className="card doughnut flex align-items-center pt-10">
                     <h1>Register Data Entry Operator</h1>
 
-                    <div className="p-inputgroup flex-1">
+                    <div className="p-inputgroup flex-1 mt-2">
                         <span className="p-inputgroup-addon">
                             <i className="pi pi-user"></i>
                         </span>
@@ -213,7 +213,7 @@ const handleDEORegistration = async () => {
                         />
                     </div>
 
-                    <div className="p-inputgroup flex-1">
+                    <div className="p-inputgroup flex-1 mt-3">
                         <span className="p-inputgroup-addon">
                             <i className="pi pi-lock"></i>
                         </span>
@@ -226,7 +226,7 @@ const handleDEORegistration = async () => {
                         />
                     </div>
                            <button
-                        className="p-button p-button-success p-mt-2"
+                        className="p-button p-button-success mt-4"
                         onClick={handleDEORegistration}
                     >
                         Register
@@ -250,7 +250,7 @@ const handleDEORegistration = async () => {
                 <div className="card doughnut flex align-items-center">
                     <h1>Register Member</h1>
 
-                    <div className="p-inputgroup flex-1">
+                    <div className="p-inputgroup flex-1 mt-3">
                         <span className="p-inputgroup-addon">
                             <i className="pi pi-user"></i>
                         </span>
@@ -262,7 +262,7 @@ const handleDEORegistration = async () => {
                         />
                     </div>
 
-                    <div className="p-inputgroup flex-1">
+                    <div className="p-inputgroup flex-1 mt-3">
                         <span className="p-inputgroup-addon">
                             <i className="pi pi-lock"></i>
                         </span>
@@ -275,7 +275,7 @@ const handleDEORegistration = async () => {
                         />
                     </div>
 
-                    <div className="p-inputgroup flex-1">
+                    <div className="p-inputgroup flex-1 mt-3">
                         <span className="p-inputgroup-addon">
                             <i className="pi pi-angle-double-right"></i>
                         </span>
@@ -289,7 +289,7 @@ const handleDEORegistration = async () => {
                     </div>
 
                     <button
-                        className="p-button p-button-success p-mt-2"
+                        className="p-button p-button-success mt-4"
                         onClick={handleMemberRegistration}
                     >
                         Register

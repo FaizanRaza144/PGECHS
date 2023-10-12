@@ -11,6 +11,8 @@ import "primeflex/primeflex.css";
 import InventryForm from "./InventryForm";
 
 function CompanyData() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchBy, setSearchBy] = useState('memberId'); // Default search criteria
   const [cusData, setCusData] = useState([]);
   const [displayPosition, setDisplayPosition] = useState(false);
   const [position, setPosition] = useState("center");
@@ -31,7 +33,35 @@ function CompanyData() {
   useEffect(() => {
     getAllCustomers();
   }, []);
+  const handleSearch = async () => {
+    const response = await Axios.get("http://localhost:3001/members/all");
+    if (response.status === 200) {
+      const { data } = response;
+      setCusData(data.data);
+    } else {
+      console.log("No data found from API");
+    }
+    if (searchBy === "cnic") {
+      const results = cusData.filter(item => item.cnic === searchTerm);
 
+      // Update the searchResults state with the filtered data
+      setCusData(results);
+    }
+    if (searchBy === "memberId") {
+      const results = cusData.filter(item => item.member_id.MemberId === searchTerm);
+
+      // Update the searchResults state with the filtered data
+      setCusData(results);
+    }
+    if (searchBy === "name") {
+      const results = cusData.filter(item => item.name === searchTerm);
+
+      // Update the searchResults state with the filtered data
+      setCusData(results);
+    }
+   
+    console.log(`Searching by ${searchBy}: ${searchTerm}`);
+  };
   const dialogFuncMap = {
     displayPosition: setDisplayPosition,
   };
@@ -47,11 +77,20 @@ function CompanyData() {
 
 
   const icon = (rowData) => {
+    const role = localStorage.getItem("role");
     return (
+      
       <div>
+        {role === "65108d7c54d406ae7e8c5142" ? (
+        <>
         <button className="pi pi-pencil ml-2 p-mr-2 edit-icon-background" onClick={() => editfunc(rowData)}></button>
         <button className="pi pi-trash ml-2 p-ml-2 delete-icon-background" onClick={() => deleteUserData(rowData._id)}></button>
-      </div>
+        </>
+      ) : (
+        <>
+        </>
+      )}
+        </div>
     );
   };
 
@@ -239,6 +278,29 @@ const [getIndividualPlotData,setIndividualPlotData]=useState(null);
           <div className="p-grid p-dir-col">
             <div className="p-col addnewbutton">
               <h3 className="mt-2">Plots Management</h3>
+            </div>
+            <div className="search-container">
+              <input
+                type="text"
+                className="search-input"
+                placeholder="Enter search term"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+
+              <select
+                value={searchBy}
+                onChange={(e) => setSearchBy(e.target.value)}
+                className="search-select"
+              >
+                <option value="cnic">CNIC</option>
+                <option value="name">Name</option>
+                <option value="memberId">Member ID</option>
+              </select>
+
+              <button onClick={handleSearch} className="search-button">
+                Search
+              </button>
             </div>
           </div>
 

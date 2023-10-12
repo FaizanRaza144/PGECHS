@@ -193,7 +193,7 @@ const App = () => {
         {
           label: "Password Reset",
           icon: "pi pi-fw pi-list",
-          to: "/Cust",
+          to: "/user",
         },
       ],
     },
@@ -295,13 +295,15 @@ const App = () => {
   // Callback function to set the authentication state when the user logs in
   const handleLoginSuccess = () => {
     setAuthenticated(true);
+
   };
   useEffect(() => {
     const token = localStorage.getItem("authToken");
-
-    if (token) {
+    if (token && token!=null) {
       // You should also check if the token is valid (not expired) here
       setAuthenticated(true);
+      history.push("/dashboard");
+      
     }
   }, []);
 
@@ -342,6 +344,7 @@ const App = () => {
           <div className="layout-main-container innr-Body">
             <div className="layout-main">
               <Switch>
+            
                 <Route path="/dashboard" exact component={Dashboard} />
                 <Route path="/user" exact component={CustomerData} />
                 <Route path="/client" exact component={ClientData} />
@@ -356,7 +359,7 @@ const App = () => {
         </>
       ) : (
         // If not authenticated, render the Login component
-        <Route path="/" >
+        <Route path="/login" >
           <Login onLoginSuccess={handleLoginSuccess} />
         </Route>
       )}

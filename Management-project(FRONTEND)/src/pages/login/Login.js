@@ -48,10 +48,13 @@ const Login = ({ onLoginSuccess }) => {
       if (response.status === 200) {
 
         const token = response.data.token;
-
-        // Store the token in local storage
+        const role = response.data.Data.role;
+        const ID = response.data.Data._id
+        console.log("ID of USER: "+ID)
+        // Store the token in local storages
         localStorage.setItem("authToken", token);
-
+        localStorage.setItem("role", role)
+        localStorage.setItem("id",ID);
         
         console.log("User Successfully Logged In");
         toast.success("User Successfully Logged In");

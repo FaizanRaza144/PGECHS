@@ -9,8 +9,10 @@ import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.css";
 import "primeflex/primeflex.css";
 import CompanyForm from "./CompanyForm";
-
+import './search.css';
 function CompanyData() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchBy, setSearchBy] = useState('memberId'); // Default search criteria
   const [cusData, setCusData] = useState([]);
   const [displayPosition, setDisplayPosition] = useState(false);
   const [position, setPosition] = useState("center");
@@ -31,7 +33,35 @@ function CompanyData() {
   useEffect(() => {
     getAllCustomers();
   }, []);
+  const handleSearch = async () => {
+    const response = await Axios.get("http://localhost:3001/admin/getAllRegisterdMembers");
+    if (response.status === 200) {
+      const { data } = response;
+      setCusData(data.data);
+    } else {
+      console.log("No data found from API");
+    }
+    if (searchBy === "email") {
+      const results = cusData.filter(item => item.email === searchTerm);
 
+      // Update the searchResults state with the filtered data
+      setCusData(results);
+    }
+    if (searchBy === "memberId") {
+      const results = cusData.filter(item => item.MemberId === searchTerm);
+
+      // Update the searchResults state with the filtered data
+      setCusData(results);
+    }
+    if (searchBy === "name") {
+      const results = cusData.filter(item => item.MemberId === searchTerm);
+
+      // Update the searchResults state with the filtered data
+      setCusData(results);
+    }
+   
+    console.log(`Searching by ${searchBy}: ${searchTerm}`);
+  };
   const dialogFuncMap = {
     displayPosition: setDisplayPosition,
   };
@@ -47,12 +77,22 @@ function CompanyData() {
 
 
   const icon = (rowData) => {
+    const role = localStorage.getItem("role");
     return (
       <div>
-        <button className="pi pi-eye ml-2 p-ml-2 view-icon-background" onClick={() => viewMemberDetails(rowData._id)}></button>
-        <button className="pi pi-plus-circle ml-2 p-ml-2 add-icon-background" onClick={() => addMemberDetails(rowData._id)}></button>
-        <button className="pi pi-pencil ml-2 p-mr-2 edit-icon-background" onClick={() => editfunc(rowData)}></button>
-        <button className="pi pi-trash ml-2 p-ml-2 delete-icon-background" onClick={() => deleteUserData(rowData._id)}></button>
+        {role === "65108d7c54d406ae7e8c5142" ? (
+          <>
+            <button className="pi pi-eye ml-2 p-ml-2 view-icon-background" onClick={() => viewMemberDetails(rowData._id)}></button>
+            <button className="pi pi-plus-circle ml-2 p-ml-2 add-icon-background" onClick={() => addMemberDetails(rowData._id)}></button>
+            <button className="pi pi-pencil ml-2 p-mr-2 edit-icon-background" onClick={() => editfunc(rowData)}></button>
+            <button className="pi pi-trash ml-2 p-ml-2 delete-icon-background" onClick={() => deleteUserData(rowData._id)}></button>
+          </>
+        ) : (
+          <>
+            <button className="pi pi-eye ml-2 p-ml-2 view-icon-background" onClick={() => viewMemberDetails(rowData._id)}></button>
+            <button className="pi pi-plus-circle ml-2 p-ml-2 add-icon-background" onClick={() => addMemberDetails(rowData._id)}></button>
+          </>
+        )}
       </div>
     );
   };
@@ -78,20 +118,20 @@ function CompanyData() {
 
   const confirmDelete = async () => {
     if (getMemberIDforDeletion) {
-      console.log("MEMBER ID: "+getMemberIDforDeletion)    
+      console.log("MEMBER ID: " + getMemberIDforDeletion)
       try {
         const dataResponse = await Axios.get(`http://localhost:3001/members/getbyid/${getMemberIDforDeletion}`);
 
         if (dataResponse.status === 200) {
           const { data } = dataResponse;
           if (data.data != null) {
-            console.log("subID: "+data.data._id);
+            console.log("subID: " + data.data._id);
             console.log(data);
-              const response = await Axios.delete(`http://localhost:3001/members/delete/${data.data._id}`);
-              if (response.status === 200) {
-                getAllCustomers();
-              }
-          
+            const response = await Axios.delete(`http://localhost:3001/members/delete/${data.data._id}`);
+            if (response.status === 200) {
+              getAllCustomers();
+            }
+
           } else {
             console.log(data.msg);
           }
@@ -101,18 +141,18 @@ function CompanyData() {
       } catch (error) {
         console.error("Error fetching data from API:", error);
       }
-   
-       
-   
-     
+
+
+
+
     }
     setDeleteConfirmationVisible(false);
-    }
-
-  
+  }
 
 
-  const [getMemberIDforDeletion,setMemberIDforDeletion]=useState(null);
+
+
+  const [getMemberIDforDeletion, setMemberIDforDeletion] = useState(null);
   const deleteUserData = (rowData) => {
     setMemberIDforDeletion(rowData);
     setDeleteConfirmationVisible(true);
@@ -138,14 +178,14 @@ function CompanyData() {
     setMemberID(rowData);
   };
 
-  
-  const [getAllotmentCertificatePath,setAllotmentCertificatePath] = useState(null);
-  const [getMemberShipTransfer,setMemberShipTransfer] = useState(null);
-  const [getApplicationForm,setApplicationForm] = useState(null);
-  const [getUnderTaking,setUnderTaking] = useState(null);
-  const [getAffidavit,setAffidavit] = useState(null);
-  const [getTransferImage,setTransferImage] = useState(null);
-  const [getMergedPDF,setMergedPDF] = useState(null);
+
+  const [getAllotmentCertificatePath, setAllotmentCertificatePath] = useState(null);
+  const [getMemberShipTransfer, setMemberShipTransfer] = useState(null);
+  const [getApplicationForm, setApplicationForm] = useState(null);
+  const [getUnderTaking, setUnderTaking] = useState(null);
+  const [getAffidavit, setAffidavit] = useState(null);
+  const [getTransferImage, setTransferImage] = useState(null);
+  const [getMergedPDF, setMergedPDF] = useState(null);
   useEffect(() => {
     if (selectedMemberID) {
       const fetchMemberData = async () => {
@@ -198,7 +238,7 @@ function CompanyData() {
   const renderDeleteConfirmationFooter = () => (
     <div>
       <Button label="Cancel" className="p-button-secondary" onClick={() => setDeleteConfirmationVisible(false)} />
-      <Button label="Delete" className="p-button-danger" onClick={()=>confirmDelete()} />
+      <Button label="Delete" className="p-button-danger" onClick={() => confirmDelete()} />
     </div>
   );
 
@@ -231,6 +271,30 @@ function CompanyData() {
           <div className="p-grid p-dir-col">
             <div className="p-col addnewbutton">
               <h3 className="mt-2">Member Management</h3>
+            </div>
+
+            <div className="search-container">
+              <input
+                type="text"
+                className="search-input"
+                placeholder="Enter search term"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+
+              <select
+                value={searchBy}
+                onChange={(e) => setSearchBy(e.target.value)}
+                className="search-select"
+              >
+                <option value="email">email</option>
+                <option value="name">Name</option>
+                <option value="memberId">Member ID</option>
+              </select>
+
+              <button onClick={handleSearch} className="search-button">
+                Search
+              </button>
             </div>
           </div>
 
@@ -274,42 +338,42 @@ function CompanyData() {
                   {/* Provide clickable links to view uploaded files */}
                   {/* Conditionally render file buttons if a file URL is available */}
                   <div>
-                <p>Allotment Certificate:</p>
-                <button onClick={() =>viewFile(getAllotmentCertificatePath)}>View</button>
-               
-              </div>
-              <div>
-                <p>Membership Transfer:</p>
-                <button onClick={() => viewFile(getMemberShipTransfer)}>View</button>
-               
-              </div>
-              <div>
-                <p>Application Form:</p>
-                <button onClick={() =>viewFile(getApplicationForm)}>View</button>
-               
-              </div>
-              <div>
-                <p>Under-taking:</p>
-                <button onClick={() => viewFile(getUnderTaking)}>View</button>
-               
-              </div>
-              <div>
-                <p>Affidavit:</p>
-                <button onClick={() =>viewFile(getAffidavit)}>View</button>
-               
-              </div>
-              <div>
-                <p>Transfer Image:</p>
-                <button onClick={() => viewFile(getTransferImage)}>View</button>
-               
-              </div>
-              <div>
-                <p>All Merged Documents:</p>
-                <button onClick={() => viewFile(getMergedPDF)}>View</button>
-               
-              </div>
+                    <p>Allotment Certificate:</p>
+                    <button onClick={() => viewFile(getAllotmentCertificatePath)}>View</button>
 
-                
+                  </div>
+                  <div>
+                    <p>Membership Transfer:</p>
+                    <button onClick={() => viewFile(getMemberShipTransfer)}>View</button>
+
+                  </div>
+                  <div>
+                    <p>Application Form:</p>
+                    <button onClick={() => viewFile(getApplicationForm)}>View</button>
+
+                  </div>
+                  <div>
+                    <p>Under-taking:</p>
+                    <button onClick={() => viewFile(getUnderTaking)}>View</button>
+
+                  </div>
+                  <div>
+                    <p>Affidavit:</p>
+                    <button onClick={() => viewFile(getAffidavit)}>View</button>
+
+                  </div>
+                  <div>
+                    <p>Transfer Image:</p>
+                    <button onClick={() => viewFile(getTransferImage)}>View</button>
+
+                  </div>
+                  <div>
+                    <p>All Merged Documents:</p>
+                    <button onClick={() => viewFile(getMergedPDF)}>View</button>
+
+                  </div>
+
+
 
                 </>
               ) : (

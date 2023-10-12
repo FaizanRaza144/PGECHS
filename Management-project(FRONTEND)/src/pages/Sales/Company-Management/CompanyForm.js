@@ -4,10 +4,12 @@ import { useFormik } from 'formik';
 import Axios from 'axios';
 import * as Yup from 'yup';
 import { Button } from 'primereact/button';
+import { Tag } from 'primereact/tag';
 
 export default function MemberForm({ memberID }) {
-    console.log("MemberID: "+ memberID)
-  const [fileData, setFileData] = useState({});
+   const [fileData, setFileData] = useState({});
+  const [errorMEssage,setErrorMessage] = useState(null);
+  const [successMEssage,setSuccessMessage] = useState(null);
 
   const validationSchema = Yup.object().shape({
     name: Yup.string().required('This field is required.'),
@@ -42,10 +44,23 @@ export default function MemberForm({ memberID }) {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
-        });
-
-        // Handle success (e.g., show a success message)
-        console.log('Response:', response.data);
+          validateStatus: function (status) {
+            return status === 200 || status === 409; // Axios will throw an error for other status codes
+        },
+    });
+    if (response.status === 409) {
+        const { data } = response;
+        console.log('Error: '+data.message)
+        setErrorMessage(data.message)
+    } else if (response.status === 200) {
+      const { data } = response;
+        console.log('Error: '+data.message)
+        setSuccessMessage(data.message)
+        // You can redirect or perform other actions on successful registration
+    } else {
+        console.log("Unexpected response status:", response.status);
+    }
+  
       } catch (error) {
         // Handle errors (e.g., show an error message)
         console.error('API Error:', error);
@@ -137,6 +152,16 @@ export default function MemberForm({ memberID }) {
             <input type="file" name="mergedPDF" onChange={handleFileChange} />
           </div>
           {/* Repeat the above block for other file uploads */}
+
+
+          <div className="p-field col-xs-12 col-sm-12 col-md-6 col-lg-6 p-6">
+                    <Tag value={errorMEssage} severity="danger"></Tag>
+          </div>
+          <div className="p-field col-xs-12 col-sm-12 col-md-6 col-lg-6 p-6">
+                    <Tag value={errorMEssage} severity="success"></Tag>
+          </div>
+                
+
           <div className="flex cus-buton">
             <Button label="SUBMIT" className="p-button-rounded p-button-success" type="submit" />
           </div>
